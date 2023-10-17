@@ -1,0 +1,91 @@
+CREATE DATABASE ECommerceDB;
+
+
+USE ECommerceDB;
+
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY,
+    ProductName VARCHAR(100),
+    Category VARCHAR(50),
+    Price DECIMAL(10, 2)
+);
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    Email VARCHAR(100)
+);
+
+
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    CustomerID INT,
+    OrderDate DATETIME,
+    TotalAmount DECIMAL(10, 2),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+
+CREATE TABLE OrderItems (
+    OrderItemID INT PRIMARY KEY,
+    OrderID INT,
+    ProductID INT,
+    Quantity INT,
+    Subtotal DECIMAL(10, 2),
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+
+CREATE TABLE Interactions (
+    InteractionID INT PRIMARY KEY,
+    CustomerID INT,
+    InteractionType VARCHAR(50),
+    InteractionDate DATETIME,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+INSERT INTO Products (ProductID, ProductName, Category, Price)
+VALUES
+    (1, 'Laptop', 'Electronics', 800.00),
+    (2, 'Smartphone', 'Electronics', 400.00),
+    (3, 'Headphones', 'Electronics', 50.00);
+
+
+INSERT INTO Customers (CustomerID, FirstName, LastName, Email)
+VALUES
+    (1, 'Can', 'Su', 'john.doe@example.com'),
+    (2, 'Ali', 'Ok', 'jane.smith@example.com'),
+    (3, 'Cem', 'Al', 'bob.johnson@example.com');
+e
+INSERT INTO Orders (OrderID, CustomerID, OrderDate, TotalAmount)
+VALUES
+    (1, 1, '2023-01-15 10:00:00', 1250.00),
+    (2, 2, '2023-02-20 12:30:00', 750.00),
+    (3, 3, '2023-03-20 15:45:00', 100.00);
+
+
+INSERT INTO OrderItems (OrderItemID, OrderID, ProductID, Quantity, Subtotal)
+VALUES
+    (1, 1, 1, 1, 800.00),
+    (2, 1, 2, 2, 800.00),
+    (3, 2, 3, 5, 250.00),
+    (4, 3, 1, 1, 800.00),
+    (5, 3, 3, 2, 100.00);
+
+
+INSERT INTO Interactions (InteractionID, CustomerID, InteractionType, InteractionDate)
+VALUES
+    (1, 1, 'Visit', '2023-01-16 14:00:00'),
+    (2, 2, 'Purchase', '2023-02-21 13:00:00'),
+    (3, 3, 'Support', '2023-03-22 16:30:00');
+
+
+SELECT
+    Products.Category,
+    SUM(OrderItems.Subtotal) AS TotalSales
+FROM
+    OrderItems
+JOIN Products ON OrderItems.ProductID = Products.ProductID
+GROUP BY
+    Products.Category;
